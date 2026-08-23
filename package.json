@@ -1,0 +1,13 @@
+{
+  "name": "clinibox",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "portal": "pnpm --filter portal dev",
+    "clinic": "pnpm --filter clinic start",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "packageManager": "pnpm@11.22.0"
+}

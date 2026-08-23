@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meeting Timer</title>
+
+<style>
+  :root {
+    --bg: #F3F5F7;
+    --card: #FFFFFF;
+    --ink: #1C2430;
+    --muted: #5C6B7A;
+    --line: #DDE3E9;
+    --accent: #2C5F8A;
+    --accent-ink: #FFFFFF;
+    --green: #178A4C;
+    --orange: #DF8E0B;
+    --red: #C93B32;
+    --state-ink: #FFFFFF;
+    --shadow: 0 1px 3px rgba(28, 36, 48, 0.08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #12161B;
+      --card: #1B2129;
+      --ink: #E6EBF0;
+      --muted: #93A1B0;
+      --line: #2A323C;
+      --accent: #6FA8D6;
+      --accent-ink: #10202E;
+      --green: #1D9455;
+      --orange: #C97F0A;
+      --red: #BE423A;
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 32px 20px 48px;
+    line-height: 1.45;
+  }
+  .container { max-width: 680px; margin: 0 auto; }
+
+  .masthead {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .masthead h1 { font-size: 1.35rem; font-weight: 650; letter-spacing: -0.01em; }
+  .masthead .tag {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--muted);
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+  }
+
+  label {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 5px;
+  }
+  input {
+    width: 100%;
+    padding: 9px 11px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  input[type="number"] { font-variant-numeric: tabular-nums; }
+
+  .total-row { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+  .total-row .field { width: 170px; }
+  .budget-note { font-size: 0.88rem; color: var(--muted); padding-bottom: 9px; }
+  .budget-note.over { color: var(--red); font-weight: 600; }
+
+  .topic-row {
+    display: grid;
+    grid-template-columns: 1fr 96px 1fr 34px;
+    gap: 10px;
+    align-items: end;
+    margin-bottom: 12px;
+  }
+  @media (max-width: 540px) {
+    .topic-row { grid-template-columns: 1fr 80px 34px; }
+    .topic-row .cell-leader { grid-column: 1 / -1; }
+  }
+
+  button {
+    border: none;
+    border-radius: 7px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 10px 18px;
+    color: var(--ink);
+    background: transparent;
+  }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .btn-primary:hover { filter: brightness(1.08); }
+  .btn-ghost { border: 1px solid var(--line); background: var(--card); }
+  .btn-ghost:hover { border-color: var(--muted); }
+  .btn-remove {
+    color: var(--muted);
+    font-size: 1.05rem;
+    padding: 8px 6px;
+    line-height: 1;
+  }
+  .btn-remove:hover { color: var(--red); }
+  .btn-start {
+    background: var(--green);
+    color: var(--state-ink);
+    font-size: 1.05rem;
+    padding: 13px 30px;
+  }
+  .btn-start:hover { filter: brightness(1.08); }
+  .btn-start:disabled { background: var(--muted); opacity: 0.5; cursor: not-allowed; filter: none; }
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  /* ---- Timer screen ---- */
+  #timerScreen { display: none; text-align: center; }
+  .state-card {
+    border-radius: 14px;
+    padding: 56px 24px 40px;
+    color: var(--state-ink);
+    background: var(--green);
+    transition: background-color 0.5s ease;
+    margin-bottom: 14px;
+  }
+  .state-card.orange { background: var(--orange); }
+  .state-card.red { background: var(--red); }
+  .state-card.red.flash { animation: flash 1s step-end infinite; }
+  @keyframes flash { 50% { filter: brightness(0.78); } }
+  @media (prefers-reduced-motion: reduce) {
+    .state-card { transition: none; }
+    .state-card.red.flash { animation: none; }
+  }
+
+  .topic-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    opacity: 0.85;
+    margin-bottom: 10px;
+  }
+  .topic-title {
+    font-size: clamp(1.5rem, 4.5vw, 2.2rem);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+    margin-bottom: 6px;
+  }
+  .topic-leader { font-size: 1.1rem; opacity: 0.92; margin-bottom: 28px; }
+  .clock {
+    font-family: "Cascadia Mono", "SF Mono", "Consolas", ui-monospace, monospace;
+    font-size: clamp(4rem, 14vw, 6.5rem);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .overtime-label {
+    display: none;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin-top: 14px;
+  }
+  .up-next { font-size: 0.9rem; color: var(--muted); margin-bottom: 14px; }
+  .timer-controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+  #doneScreen { display: none; text-align: center; }
+  .done-title { font-size: 1.6rem; font-weight: 700; margin-bottom: 8px; }
+  .done-sub { color: var(--muted); margin-bottom: 18px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ======== SETUP ======== -->
+  <div id="setupScreen">
+    <div class="masthead">
+      <h1>Meeting Timer</h1>
+      <span class="tag">Agenda &middot; countdown &middot; handoff</span>
+    </div>
+
+    <div class="card">
+      <div class="total-row">
+        <div class="field">
+          <label for="totalTime">Total meeting (minutes)</label>
+          <input type="number" id="totalTime" min="1" value="30">
+        </div>
+        <div class="budget-note" id="budgetNote"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div id="topicList"></div>
+      <div class="actions">
+        <button class="btn-ghost" id="addTopicBtn" type="button">+ Add topic</button>
+      </div>
+    </div>
+
+    <button class="btn-start" id="startBtn" type="button" disabled>&#9654;&nbsp; Start meeting</button>
+  </div>
+
+  <!-- ======== TIMER ======== -->
+  <div id="timerScreen">
+    <div class="state-card" id="stateCard">
+      <div class="topic-eyebrow" id="progressLabel"></div>
+      <div class="topic-title" id="topicTitle"></div>
+      <div class="topic-leader" id="topicLeader"></div>
+      <div class="clock" id="clock">00:00</div>
+      <div class="overtime-label" id="overtimeLabel">Overtime</div>
+    </div>
+    <div class="up-next" id="upNext"></div>
+    <div class="timer-controls">
+      <button class="btn-ghost" id="pauseBtn" type="button">Pause</button>
+      <button class="btn-primary" id="nextBtn" type="button">Next topic &#9654;</button>
+      <button class="btn-ghost" id="resetBtn" type="button">Back to setup</button>
+    </div>
+  </div>
+
+  <!-- ======== DONE ======== -->
+  <div id="doneScreen">
+    <div class="card" style="padding: 36px 24px;">
+      <div class="done-title">Meeting finished</div>
+      <p class="done-sub">Every topic is done. Nice pacing.</p>
+      <button class="btn-primary" id="restartBtn" type="button">New meeting</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  var STORAGE_KEY = 'meeting-timer-agenda';
+
+  var setupScreen = document.getElementById('setupScreen');
+  var timerScreen = document.getElementById('timerScreen');
+  var doneScreen  = document.getElementById('doneScreen');
+  var topicListEl = document.getElementById('topicList');
+  var totalTimeEl = document.getElementById('totalTime');
+  var budgetNote  = document.getElementById('budgetNote');
+  var startBtn    = document.getElementById('startBtn');
+
+  var stateCard     = document.getElementById('stateCard');
+  var topicTitleEl  = document.getElementById('topicTitle');
+  var topicLeaderEl = document.getElementById('topicLeader');
+  var clockEl       = document.getElementById('clock');
+  var progressLabel = document.getElementById('progressLabel');
+  var overtimeLabel = document.getElementById('overtimeLabel');
+  var upNextEl      = document.getElementById('upNext');
+  var pauseBtn      = document.getElementById('pauseBtn');
+
+  // ---------- Setup ----------
+  function makeCell(labelText, input, extraClass) {
+    var cell = document.createElement('div');
+    if (extraClass) cell.className = extraClass;
+    var label = document.createElement('label');
+    label.textContent = labelText;
+    cell.appendChild(label);
+    cell.appendChild(input);
+    return cell;
+  }
+
+  function addTopicRow(name, minutes, leader) {
+    var row = document.createElement('div');
+    row.className = 'topic-row';
+
+    var nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.className = 't-name';
+    nameInput.placeholder = 'e.g. Budget review';
+    nameInput.value = name || '';
+
+    var minInput = document.createElement('input');
+    minInput.type = 'number';
+    minInput.className = 't-min';
+    minInput.min = '1';
+    minInput.value = (minutes != null ? minutes : 5);
+
+    var leaderInput = document.createElement('input');
+    leaderInput.type = 'text';
+    leaderInput.className = 't-leader';
+    leaderInput.placeholder = 'e.g. Dana';
+    leaderInput.value = leader || '';
+
+    var removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'btn-remove';
+    removeBtn.title = 'Remove topic';
+    removeBtn.setAttribute('aria-label', 'Remove topic');
+    removeBtn.innerHTML = '&#10005;';
+    removeBtn.addEventListener('click', function () {
+      row.remove();
+      onAgendaChange();
+    });
+
+    [nameInput, minInput, leaderInput].forEach(function (el) {
+      el.addEventListener('input', onAgendaChange);
+    });
+
+    row.appendChild(makeCell('Topic', nameInput));
+    row.appendChild(makeCell('Minutes', minInput));
+    row.appendChild(makeCell('Leader', leaderInput, 'cell-leader'));
+    row.appendChild(removeBtn);
+    topicListEl.appendChild(row);
+  }
+
+  function readTopics() {
+    var topics = [];
+    topicListEl.querySelectorAll('.topic-row').forEach(function (row) {
+      var name = row.querySelector('.t-name').value.trim();
+      var mins = parseFloat(row.querySelector('.t-min').value);
+      var leader = row.querySelector('.t-leader').value.trim();
+      if (name && mins > 0) {
+        topics.push({ name: name, minutes: mins, seconds: Math.round(mins * 60), leader: leader });
+      }
+    });
+    return topics;
+  }
+
+  function updateBudget() {
+    var topics = readTopics();
+    var used = topics.reduce(function (s, t) { return s + t.minutes; }, 0);
+    var total = parseFloat(totalTimeEl.value) || 0;
+    budgetNote.classList.remove('over');
+    if (topics.length === 0) {
+      budgetNote.textContent = '';
+    } else if (used > total) {
+      budgetNote.textContent = 'Topics add up to ' + used + ' min — ' + (used - total) + ' min over the ' + total + ' min budget';
+      budgetNote.classList.add('over');
+    } else {
+      budgetNote.textContent = 'Topics add up to ' + used + ' of ' + total + ' min (' + (total - used) + ' min spare)';
+    }
+    startBtn.disabled = topics.length === 0;
+  }
+
+  function saveAgenda() {
+    try {
+      var rows = [];
+      topicListEl.querySelectorAll('.topic-row').forEach(function (row) {
+        rows.push({
+          name: row.querySelector('.t-name').value,
+          minutes: row.querySelector('.t-min').value,
+          leader: row.querySelector('.t-leader').value
+        });
+      });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        total: totalTimeEl.value,
+        rows: rows
+      }));
+    } catch (e) { /* private mode: skip persistence */ }
+  }
+
+  function loadAgenda() {
+    var data = null;
+    try { data = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch (e) {}
+    if (data && data.rows && data.rows.length) {
+      totalTimeEl.value = data.total || 30;
+      data.rows.forEach(function (r) { addTopicRow(r.name, r.minutes, r.leader); });
+    } else {
+      addTopicRow();
+      addTopicRow();
+    }
+  }
+
+  function onAgendaChange() {
+    updateBudget();
+    saveAgenda();
+  }
+
+  totalTimeEl.addEventListener('input', onAgendaChange);
+  document.getElementById('addTopicBtn').addEventListener('click', function () {
+    addTopicRow();
+    updateBudget();
+  });
+
+  loadAgenda();
+  updateBudget();
+
+  // ---------- Timer ----------
+  var topics = [];
+  var currentIndex = 0;
+  var remaining = 0;      // seconds; goes negative in overtime
+  var intervalId = null;
+  var paused = false;
+
+  function formatClock(sec) {
+    var neg = sec < 0;
+    var s = Math.abs(sec);
+    var m = Math.floor(s / 60);
+    var r = s % 60;
+    return (neg ? '-' : '') + String(m).padStart(2, '0') + ':' + String(r).padStart(2, '0');
+  }
+
+  function setCardColor() {
+    stateCard.classList.remove('orange', 'red', 'flash');
+    if (remaining <= 0) {
+      stateCard.classList.add('red', 'flash');
+    } else if (remaining <= 30) {
+      stateCard.classList.add('red');
+    } else if (remaining <= 60) {
+      stateCard.classList.add('orange');
+    }
+  }
+
+  function renderTopic() {
+    var t = topics[currentIndex];
+    topicTitleEl.textContent = t.name;
+    topicLeaderEl.textContent = t.leader ? 'Led by ' + t.leader : '';
+    progressLabel.textContent = 'Topic ' + (currentIndex + 1) + ' of ' + topics.length;
+    var next = topics[currentIndex + 1];
+    upNextEl.textContent = next
+      ? 'Up next: ' + next.name + (next.leader ? ' — ' + next.leader : '')
+      : 'This is the last topic';
+    tick(true);
+  }
+
+  function tick(renderOnly) {
+    if (!renderOnly) remaining -= 1;
+    clockEl.textContent = formatClock(remaining);
+    overtimeLabel.style.display = remaining < 0 ? 'block' : 'none';
+    setCardColor();
+    document.title = formatClock(remaining) + ' · ' + topics[currentIndex].name;
+  }
+
+  function startTopic(index) {
+    currentIndex = index;
+    remaining = topics[index].seconds;
+    renderTopic();
+  }
+
+  function startMeeting() {
+    topics = readTopics();
+    if (topics.length === 0) return;
+    setupScreen.style.display = 'none';
+    doneScreen.style.display = 'none';
+    timerScreen.style.display = 'block';
+    paused = false;
+    pauseBtn.textContent = 'Pause';
+    startTopic(0);
+    clearInterval(intervalId);
+    intervalId = setInterval(function () {
+      if (!paused) tick(false);
+    }, 1000);
+  }
+
+  function nextTopic() {
+    if (currentIndex + 1 < topics.length) {
+      startTopic(currentIndex + 1);
+    } else {
+      clearInterval(intervalId);
+      timerScreen.style.display = 'none';
+      doneScreen.style.display = 'block';
+      document.title = 'Meeting Timer';
+    }
+  }
+
+  function backToSetup() {
+    clearInterval(intervalId);
+    timerScreen.style.display = 'none';
+    doneScreen.style.display = 'none';
+    setupScreen.style.display = 'block';
+    document.title = 'Meeting Timer';
+  }
+
+  startBtn.addEventListener('click', startMeeting);
+  document.getElementById('nextBtn').addEventListener('click', nextTopic);
+  document.getElementById('resetBtn').addEventListener('click', backToSetup);
+  document.getElementById('restartBtn').addEventListener('click', backToSetup);
+  pauseBtn.addEventListener('click', function () {
+    paused = !paused;
+    pauseBtn.textContent = paused ? 'Resume' : 'Pause';
+  });
+})();
+</script>
+</body>
+</html>

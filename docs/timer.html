@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Presentation Timer</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #2ecc71; /* green */
+    transition: background-color 0.3s;
+    color: #fff;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  body.caution {
+    background-color: #e67e22; /* orange — last minute */
+  }
+
+  body.warning {
+    background-color: #e74c3c; /* solid red after the flashes finish */
+    animation: flashRed 0.6s 5; /* flash 5 times, then stop */
+  }
+
+  @keyframes flashRed {
+    0%, 100% { background-color: #e74c3c; }
+    50%      { background-color: #7a0f06; }
+  }
+
+  body.done {
+    background-color: #34495e;
+    animation: none;
+  }
+
+  #name {
+    font-size: 9vw;
+    font-weight: 700;
+    text-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  }
+
+  #time {
+    font-size: 22vw;
+    font-weight: 800;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 6px 18px rgba(0,0,0,0.3);
+  }
+
+  #next {
+    font-size: 3vw;
+    opacity: 0.85;
+    min-height: 1.4em;
+  }
+
+  #total {
+    font-size: 3.5vw;
+    opacity: 0.9;
+    margin-top: 1vh;
+    font-variant-numeric: tabular-nums;
+  }
+
+  #fsBtn {
+    position: fixed;
+    top: 14px;
+    right: 14px;
+    font-size: 1.1rem;
+    padding: 10px 16px;
+    z-index: 10;
+  }
+
+  #controls {
+    margin-top: 4vh;
+    display: flex;
+    gap: 16px;
+  }
+
+  button {
+    font-size: 1.4rem;
+    padding: 12px 32px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    background: rgba(255,255,255,0.9);
+    color: #222;
+    font-weight: 600;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+  }
+
+  button:hover { background: #fff; }
+
+  /* Phone / tablet portrait: vw-based sizes get too small, scale them up */
+  @media (orientation: portrait) {
+    #name  { font-size: 14vw; }
+    #time  { font-size: 26vw; }
+    #next  { font-size: 5vw; }
+    #total { font-size: 6vw; }
+    button { font-size: 1.1rem; padding: 12px 24px; }
+  }
+</style>
+</head>
+<body>
+
+  <button id="fsBtn" title="Fullscreen">&#x26F6; Fullscreen</button>
+
+  <div id="name">Ready</div>
+  <div id="time">--:--</div>
+  <div id="next"></div>
+  <div id="total">Total: --:--</div>
+
+  <div id="controls">
+    <button id="startBtn">Start</button>
+    <button id="skipBtn">Skip &#9197;</button>
+  </div>
+
+<script>
+  // Each section: [name, duration in seconds]
+  const sections = [
+    ["Tal",    3   * 60],
+    ["Tomer",  4   * 60],
+    ["Jonas",  4   * 60],
+    ["Tomer",  2   * 60],
+    ["Michal", 4   * 60],
+    ["Ori",    2.5 * 60],
+    ["Tal",    1   * 60],
+  ];
+
+  const WARNING_SECONDS = 30; // red + 5 flashes
+  const CAUTION_SECONDS = 60; // orange
+
+  const nameEl  = document.getElementById("name");
+  const timeEl  = document.getElementById("time");
+  const nextEl  = document.getElementById("next");
+  const totalEl = document.getElementById("total");
+  const startBtn = document.getElementById("startBtn");
+  const skipBtn  = document.getElementById("skipBtn");
+  const fsBtn    = document.getElementById("fsBtn");
+
+  let current = -1;        // index of current section
+  let remaining = 0;       // seconds left in current section
+  let timerId = null;
+  let running = false;
+
+  function formatTime(s) {
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return String(m).padStart(2, "0") + ":" + String(sec).padStart(2, "0");
+  }
+
+  function totalRemaining() {
+    let t = remaining;
+    for (let i = current + 1; i < sections.length; i++) t += sections[i][1];
+    return t;
+  }
+
+  function render() {
+    timeEl.textContent = formatTime(remaining);
+    if (remaining <= WARNING_SECONDS) {
+      document.body.classList.remove("caution");
+      document.body.classList.add("warning"); // flashes 5x via CSS, then stays solid red
+    } else if (remaining <= CAUTION_SECONDS) {
+      document.body.classList.remove("warning");
+      document.body.classList.add("caution");
+    } else {
+      document.body.classList.remove("warning", "caution");
+    }
+    const nxt = sections[current + 1];
+    nextEl.textContent = nxt ? "Next: " + nxt[0] + " (" + formatTime(nxt[1]) + ")" : "Last section";
+    totalEl.textContent = "Total: " + formatTime(totalRemaining());
+  }
+
+  function beep() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.value = 880;
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.6);
+    } catch (e) { /* audio not available */ }
+  }
+
+  // Keep the screen awake while the timer runs (Wake Lock API)
+  let wakeLock = null;
+
+  async function acquireWakeLock() {
+    try {
+      if ("wakeLock" in navigator && !wakeLock) {
+        wakeLock = await navigator.wakeLock.request("screen");
+        wakeLock.addEventListener("release", () => { wakeLock = null; });
+      }
+    } catch (e) { /* not supported or denied — screen may still time out */ }
+  }
+
+  function releaseWakeLock() {
+    if (wakeLock) { wakeLock.release(); wakeLock = null; }
+  }
+
+  // Wake locks are auto-released when the tab is hidden; re-acquire on return
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible" && running) acquireWakeLock();
+  });
+
+  function startSection(i) {
+    current = i;
+    if (current >= sections.length) {
+      finish();
+      return;
+    }
+    const [name, dur] = sections[current];
+    nameEl.textContent = name;
+    remaining = dur;
+    document.body.classList.remove("warning", "caution");
+    render();
+  }
+
+  function tick() {
+    if (!running) return;
+    remaining--;
+    if (remaining <= 0) {
+      beep();
+      startSection(current + 1);
+    } else {
+      render();
+    }
+  }
+
+  function finish() {
+    clearInterval(timerId);
+    timerId = null;
+    running = false;
+    releaseWakeLock();
+    document.body.classList.remove("warning", "caution");
+    document.body.classList.add("done");
+    nameEl.textContent = "Done!";
+    timeEl.textContent = "00:00";
+    nextEl.textContent = "";
+    totalEl.textContent = "Total: 00:00";
+    startBtn.textContent = "Restart";
+  }
+
+  startBtn.addEventListener("click", () => {
+    if (document.body.classList.contains("done")) {
+      // restart from the beginning
+      document.body.classList.remove("done");
+      startSection(0);
+      running = true;
+      timerId = setInterval(tick, 1000);
+      startBtn.textContent = "Pause";
+      acquireWakeLock();
+      return;
+    }
+    if (current === -1) {
+      // first start
+      startSection(0);
+      running = true;
+      timerId = setInterval(tick, 1000);
+      startBtn.textContent = "Pause";
+      acquireWakeLock();
+    } else if (running) {
+      running = false;
+      startBtn.textContent = "Resume";
+      releaseWakeLock();
+    } else {
+      running = true;
+      startBtn.textContent = "Pause";
+      acquireWakeLock();
+    }
+  });
+
+  skipBtn.addEventListener("click", () => {
+    if (current === -1 || document.body.classList.contains("done")) return;
+    startSection(current + 1);
+  });
+
+  fsBtn.addEventListener("click", () => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      document.documentElement.requestFullscreen().catch(() => {});
+    }
+  });
+
+  document.addEventListener("fullscreenchange", () => {
+    fsBtn.innerHTML = document.fullscreenElement ? "&#x2715; Exit" : "&#x26F6; Fullscreen";
+  });
+
+  // show the full total (20:30) before the timer starts
+  totalEl.textContent = "Total: " + formatTime(sections.reduce((s, x) => s + x[1], 0));
+</script>
+
+</body>
+</html>

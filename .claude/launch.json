@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "clinibox",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["-y", "http-server", "-p", "8123", "-c-1"],
+      "port": 8123
+    },
+    {
+      "name": "portal",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "pnpm", "--filter", "portal", "dev"],
+      "port": 3100
+    }
+  ]
+}
