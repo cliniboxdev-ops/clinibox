@@ -10,6 +10,9 @@ importers:
 
   apps/clinic:
     dependencies:
+      '@clinibox/protocol-engine':
+        specifier: workspace:*
+        version: link:../../packages/protocol-engine
       '@clinibox/shared':
         specifier: workspace:*
         version: link:../../packages/shared
