@@ -1,37 +1,62 @@
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { I18nProvider, useI18n, type Lang } from "./src/i18n";
 import MonitorScreen from "./src/screens/MonitorScreen";
 import RegisterScreen from "./src/screens/RegisterScreen";
 import { COLORS } from "./src/theme";
 
 type Tab = "pacientes" | "monitor";
 
-const TABS: { id: Tab; label: string }[] = [
-  { id: "pacientes", label: "Pacientes" },
-  { id: "monitor", label: "Monitor" },
-];
-
 export default function App() {
+  return (
+    <I18nProvider>
+      <Shell />
+    </I18nProvider>
+  );
+}
+
+function Shell() {
+  const { t, lang, setLang } = useI18n();
   const [tab, setTab] = useState<Tab>("pacientes");
+
+  const tabs: { id: Tab; label: string }[] = [
+    { id: "pacientes", label: t.tabs.patients },
+    { id: "monitor", label: t.tabs.monitor },
+  ];
 
   return (
     <View style={styles.screen}>
       <StatusBar style="light" />
       <View style={styles.header}>
-        <Text style={styles.logo}>
-          <Text style={{ color: "#fff" }}>Clini</Text>
-          <Text style={{ color: COLORS.teal }}>box</Text>
-        </Text>
+        <View style={styles.headerTop}>
+          <Text style={styles.logo}>
+            <Text style={{ color: "#fff" }}>Clini</Text>
+            <Text style={{ color: COLORS.teal }}>box</Text>
+          </Text>
+          <View style={styles.langRow}>
+            {(["en", "es"] as Lang[]).map((l) => (
+              <Pressable
+                key={l}
+                onPress={() => setLang(l)}
+                style={[styles.langBtn, lang === l && styles.langBtnActive]}
+              >
+                <Text style={[styles.langText, lang === l && styles.langTextActive]}>
+                  {l.toUpperCase()}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
         <View style={styles.tabRow}>
-          {TABS.map((t) => (
+          {tabs.map((item) => (
             <Pressable
-              key={t.id}
-              onPress={() => setTab(t.id)}
-              style={[styles.tab, tab === t.id && styles.tabActive]}
+              key={item.id}
+              onPress={() => setTab(item.id)}
+              style={[styles.tab, tab === item.id && styles.tabActive]}
             >
-              <Text style={[styles.tabText, tab === t.id && styles.tabTextActive]}>
-                {t.label}
+              <Text style={[styles.tabText, tab === item.id && styles.tabTextActive]}>
+                {item.label}
               </Text>
             </Pressable>
           ))}
@@ -50,7 +75,23 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
     paddingHorizontal: 20,
   },
+  headerTop: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
   logo: { fontSize: 26, fontWeight: "700" },
+  langRow: { flexDirection: "row", gap: 6 },
+  langBtn: {
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.35)",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  langBtnActive: { backgroundColor: COLORS.teal, borderColor: COLORS.teal },
+  langText: { color: "#cfe3f5", fontSize: 12, fontWeight: "700" },
+  langTextActive: { color: "#fff" },
   tabRow: { flexDirection: "row", gap: 6, marginTop: 14 },
   tab: {
     paddingHorizontal: 18,

@@ -33,9 +33,16 @@ function makeId(): string {
   return `local-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
-export function validateDni(dni: string): string | null {
-  if (!/^\d{8}$/.test(dni)) return "El DNI debe tener 8 dígitos";
-  return null;
+export type RegistrationErrorCode =
+  | "dni_invalid"
+  | "given_required"
+  | "family_required"
+  | "birthdate_invalid"
+  | "duplicate_dni";
+
+export interface RegistrationError {
+  code: RegistrationErrorCode;
+  dni?: string;
 }
 
 export async function listPatients(): Promise<StoredPatient[]> {
@@ -45,20 +52,19 @@ export async function listPatients(): Promise<StoredPatient[]> {
 
 export async function registerPatient(
   input: NewPatientInput,
-): Promise<{ ok: true; stored: StoredPatient } | { ok: false; error: string }> {
-  const dniError = validateDni(input.dni);
-  if (dniError) return { ok: false, error: dniError };
-  if (!input.givenNames.trim()) return { ok: false, error: "Ingrese los nombres" };
-  if (!input.familyName.trim()) return { ok: false, error: "Ingrese los apellidos" };
+): Promise<{ ok: true; stored: StoredPatient } | { ok: false; error: RegistrationError }> {
+  if (!/^\d{8}$/.test(input.dni)) return { ok: false, error: { code: "dni_invalid" } };
+  if (!input.givenNames.trim()) return { ok: false, error: { code: "given_required" } };
+  if (!input.familyName.trim()) return { ok: false, error: { code: "family_required" } };
   if (input.birthDate && !/^\d{4}-\d{2}-\d{2}$/.test(input.birthDate)) {
-    return { ok: false, error: "Fecha de nacimiento: use AAAA-MM-DD" };
+    return { ok: false, error: { code: "birthdate_invalid" } };
   }
 
   const existing = await listPatients();
   const duplicate = existing.some((p) =>
     p.patient.identifier.some((i) => i.system === DNI_SYSTEM && i.value === input.dni),
   );
-  if (duplicate) return { ok: false, error: `Ya existe un paciente con DNI ${input.dni}` };
+  if (duplicate) return { ok: false, error: { code: "duplicate_dni", dni: input.dni } };
 
   const patient: Patient = {
     resourceType: "Patient",

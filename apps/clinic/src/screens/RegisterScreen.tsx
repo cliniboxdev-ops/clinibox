@@ -11,8 +11,10 @@ import {
   listPatients,
   registerPatient,
   type NewPatientInput,
+  type RegistrationError,
   type StoredPatient,
 } from "../patients";
+import { useI18n } from "../i18n";
 import { COLORS } from "../theme";
 
 const EMPTY_FORM: NewPatientInput = {
@@ -24,9 +26,10 @@ const EMPTY_FORM: NewPatientInput = {
 };
 
 export default function RegisterScreen() {
+  const { t } = useI18n();
   const [form, setForm] = useState<NewPatientInput>(EMPTY_FORM);
   const [patients, setPatients] = useState<StoredPatient[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<RegistrationError | null>(null);
   const [saved, setSaved] = useState<string | null>(null);
 
   useEffect(() => {
@@ -47,44 +50,44 @@ export default function RegisterScreen() {
     setPatients((p) => [result.stored, ...p]);
     setForm(EMPTY_FORM);
     const name = result.stored.patient.name[0];
-    setSaved(`Paciente ${name.given.join(" ")} ${name.family} registrado`);
+    setSaved(`${name.given.join(" ")} ${name.family}`);
   }, [form]);
 
   return (
     <ScrollView style={styles.body} keyboardShouldPersistTaps="handled">
       <View style={styles.card}>
         <Field
-          label="DNI *"
+          label={t.reg.dni}
           value={form.dni}
           onChange={set("dni")}
-          placeholder="8 dígitos"
+          placeholder={t.reg.dniPlaceholder}
           keyboardType="number-pad"
           maxLength={8}
         />
         <Field
-          label="Nombres *"
+          label={t.reg.given}
           value={form.givenNames}
           onChange={set("givenNames")}
-          placeholder="María Elena"
+          placeholder={t.reg.givenPlaceholder}
         />
         <Field
-          label="Apellidos *"
+          label={t.reg.family}
           value={form.familyName}
           onChange={set("familyName")}
-          placeholder="Quispe Mamani"
+          placeholder={t.reg.familyPlaceholder}
         />
         <Field
-          label="Fecha de nacimiento"
+          label={t.reg.birth}
           value={form.birthDate ?? ""}
           onChange={set("birthDate")}
-          placeholder="AAAA-MM-DD"
+          placeholder={t.reg.birthPlaceholder}
         />
-        <Text style={styles.label}>Sexo</Text>
+        <Text style={styles.label}>{t.reg.sex}</Text>
         <View style={styles.genderRow}>
           {(
             [
-              ["female", "Femenino"],
-              ["male", "Masculino"],
+              ["female", t.reg.female],
+              ["male", t.reg.male],
             ] as const
           ).map(([value, label]) => (
             <Pressable
@@ -109,32 +112,28 @@ export default function RegisterScreen() {
           ))}
         </View>
         <Field
-          label="Teléfono"
+          label={t.reg.phone}
           value={form.phone ?? ""}
           onChange={set("phone")}
-          placeholder="999 999 999"
+          placeholder={t.reg.phonePlaceholder}
           keyboardType="phone-pad"
         />
 
-        {error && <Text style={styles.error}>{error}</Text>}
-        {saved && <Text style={styles.saved}>{saved}</Text>}
+        {error && <Text style={styles.error}>{t.reg.errors(error)}</Text>}
+        {saved && <Text style={styles.saved}>{t.reg.saved(saved)}</Text>}
 
         <Pressable style={styles.saveBtn} onPress={onSave}>
-          <Text style={styles.saveBtnText}>Registrar paciente</Text>
+          <Text style={styles.saveBtnText}>{t.reg.register}</Text>
         </Pressable>
-        <Text style={styles.offlineNote}>
-          Se guarda en este dispositivo — funciona sin internet.
-        </Text>
+        <Text style={styles.offlineNote}>{t.reg.offlineNote}</Text>
       </View>
 
-      <Text style={styles.listTitle}>
-        Pacientes registrados ({patients.length})
-      </Text>
+      <Text style={styles.listTitle}>{t.reg.listTitle(patients.length)}</Text>
       {patients.map((p) => (
         <PatientRow key={p.patient.id} stored={p} />
       ))}
       {patients.length === 0 && (
-        <Text style={styles.emptyList}>Aún no hay pacientes registrados.</Text>
+        <Text style={styles.emptyList}>{t.reg.empty}</Text>
       )}
       <View style={{ height: 40 }} />
     </ScrollView>
@@ -166,6 +165,7 @@ function Field(props: {
 }
 
 function PatientRow({ stored }: { stored: StoredPatient }) {
+  const { t } = useI18n();
   const { patient } = stored;
   const name = patient.name[0];
   const dni = patient.identifier[0]?.value ?? "—";
@@ -182,7 +182,7 @@ function PatientRow({ stored }: { stored: StoredPatient }) {
       </View>
       {!stored.synced && (
         <View style={styles.badge}>
-          <Text style={styles.badgeText}>sin sincronizar</Text>
+          <Text style={styles.badgeText}>{t.reg.unsynced}</Text>
         </View>
       )}
     </View>

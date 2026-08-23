@@ -9,30 +9,21 @@ import {
 } from "react-native";
 import { scoreNews2, type News2Result } from "@clinibox/protocol-engine";
 import { listPatients, type StoredPatient } from "../patients";
-import {
-  createSimulatorDriver,
-  SCENARIO_LABELS,
-  type Scenario,
-  type VitalsSample,
-} from "../telemetry";
+import { createSimulatorDriver, type Scenario, type VitalsSample } from "../telemetry";
+import { useI18n } from "../i18n";
 import { COLORS } from "../theme";
 
-const CONSCIOUSNESS_LABELS: Record<VitalsSample["consciousness"], string> = {
-  alert: "Alerta",
-  confusion: "Confusión",
-  voice: "Responde a voz",
-  pain: "Responde a dolor",
-  unresponsive: "No responde",
-};
+const SCENARIOS: Scenario[] = ["estable", "deterioro", "sepsis"];
 
-const RISK_STYLE: Record<News2Result["risk"], { label: string; color: string }> = {
-  low: { label: "RIESGO BAJO", color: COLORS.tealDark },
-  "low-medium": { label: "RIESGO BAJO-MEDIO", color: COLORS.warn },
-  medium: { label: "RIESGO MEDIO", color: COLORS.warn },
-  high: { label: "RIESGO ALTO", color: COLORS.error },
+const RISK_COLORS: Record<News2Result["risk"], string> = {
+  low: COLORS.tealDark,
+  "low-medium": COLORS.warn,
+  medium: COLORS.warn,
+  high: COLORS.error,
 };
 
 export default function MonitorScreen() {
+  const { t } = useI18n();
   const { width } = useWindowDimensions();
   const dualPane = width >= 900;
 
@@ -60,13 +51,11 @@ export default function MonitorScreen() {
     <ScrollView style={styles.body}>
       {/* patient + scenario selectors */}
       <View style={styles.selectorCard}>
-        <Text style={styles.selectorLabel}>Paciente</Text>
+        <Text style={styles.selectorLabel}>{t.mon.patient}</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View style={styles.chipRow}>
             {patients.length === 0 && (
-              <Text style={styles.emptyText}>
-                Sin pacientes — registre uno en la pestaña Pacientes.
-              </Text>
+              <Text style={styles.emptyText}>{t.mon.noPatients}</Text>
             )}
             {patients.map((p) => (
               <Pressable
@@ -86,18 +75,16 @@ export default function MonitorScreen() {
             ))}
           </View>
         </ScrollView>
-        <Text style={[styles.selectorLabel, { marginTop: 10 }]}>
-          Simulador de sensores (sin hardware)
-        </Text>
+        <Text style={[styles.selectorLabel, { marginTop: 10 }]}>{t.mon.simulator}</Text>
         <View style={styles.chipRow}>
-          {(Object.keys(SCENARIO_LABELS) as Scenario[]).map((s) => (
+          {SCENARIOS.map((s) => (
             <Pressable
               key={s}
               onPress={() => setScenario(s)}
               style={[styles.chip, s === scenario && styles.chipActive]}
             >
               <Text style={[styles.chipText, s === scenario && styles.chipTextActive]}>
-                {SCENARIO_LABELS[s]}
+                {t.mon.scenarios[s]}
               </Text>
             </Pressable>
           ))}
@@ -113,7 +100,7 @@ export default function MonitorScreen() {
           ]}
         >
           <Text style={styles.alarmText}>
-            ⚠ ALARMA — {RISK_STYLE[result.risk].label}
+            ⚠ {t.mon.alarm} — {t.mon.risk[result.risk]}
             {selected
               ? ` · ${selected.patient.name[0].given.join(" ")} ${selected.patient.name[0].family}`
               : ""}
@@ -124,59 +111,54 @@ export default function MonitorScreen() {
       <View style={[styles.panes, dualPane && styles.panesRow]}>
         {/* left pane: live vitals */}
         <View style={[styles.pane, dualPane && styles.paneHalf]}>
-          <Text style={styles.paneTitle}>Signos vitales en vivo</Text>
-          {!sample && <Text style={styles.emptyText}>Conectando sensores…</Text>}
+          <Text style={styles.paneTitle}>{t.mon.liveVitals}</Text>
+          {!sample && <Text style={styles.emptyText}>{t.mon.connecting}</Text>}
           {sample && (
             <View style={styles.tileGrid}>
-              <VitalTile label="Frec. respiratoria" value={`${sample.respiratoryRate}`} unit="rpm" />
-              <VitalTile label="SpO₂" value={`${sample.spo2}`} unit="%" />
-              <VitalTile label="Presión sistólica" value={`${sample.systolicBP}`} unit="mmHg" />
-              <VitalTile label="Pulso" value={`${sample.pulse}`} unit="lpm" />
-              <VitalTile label="Temperatura" value={sample.temperatureC.toFixed(1)} unit="°C" />
+              <VitalTile label={t.mon.rr} value={`${sample.respiratoryRate}`} unit="rpm" />
+              <VitalTile label={t.mon.spo2} value={`${sample.spo2}`} unit="%" />
+              <VitalTile label={t.mon.sbp} value={`${sample.systolicBP}`} unit="mmHg" />
+              <VitalTile label={t.mon.pulse} value={`${sample.pulse}`} unit="bpm" />
+              <VitalTile label={t.mon.temp} value={sample.temperatureC.toFixed(1)} unit="°C" />
               <VitalTile
-                label="Conciencia"
-                value={CONSCIOUSNESS_LABELS[sample.consciousness]}
+                label={t.mon.consciousness}
+                value={t.mon.consciousnessLabels[sample.consciousness]}
                 unit=""
               />
             </View>
           )}
           {sample && (
             <Text style={styles.sourceNote}>
-              Fuente: {sample.source === "simulator" ? "simulador" : "sensores BLE"} ·{" "}
+              {t.mon.source(sample.source)} ·{" "}
               {new Date(sample.timestamp).toLocaleTimeString()}
-              {sample.onSupplementalOxygen ? " · con oxígeno suplementario" : ""}
+              {sample.onSupplementalOxygen ? ` · ${t.mon.suppO2}` : ""}
             </Text>
           )}
         </View>
 
         {/* right pane: protocol guidance */}
         <View style={[styles.pane, dualPane && styles.paneHalf]}>
-          <Text style={styles.paneTitle}>Protocolo NEWS2</Text>
+          <Text style={styles.paneTitle}>{t.mon.protocolTitle}</Text>
           {result && (
             <>
               <View style={styles.scoreRow}>
                 <Text style={styles.scoreValue}>{result.total}</Text>
-                <View
-                  style={[styles.riskBadge, { backgroundColor: RISK_STYLE[result.risk].color }]}
-                >
-                  <Text style={styles.riskBadgeText}>{RISK_STYLE[result.risk].label}</Text>
+                <View style={[styles.riskBadge, { backgroundColor: RISK_COLORS[result.risk] }]}>
+                  <Text style={styles.riskBadgeText}>{t.mon.risk[result.risk]}</Text>
                 </View>
               </View>
-              <Text style={styles.recommendation}>{result.recommendation}</Text>
-              <Text style={styles.componentsTitle}>Puntaje por parámetro</Text>
+              <Text style={styles.recommendation}>{t.mon.recommendation[result.risk]}</Text>
+              <Text style={styles.componentsTitle}>{t.mon.componentsTitle}</Text>
               <View style={styles.componentList}>
-                <ComponentRow label="Frec. respiratoria" score={result.components.respiratoryRate} />
-                <ComponentRow label="SpO₂" score={result.components.spo2} />
-                <ComponentRow label="Oxígeno suplementario" score={result.components.supplementalOxygen} />
-                <ComponentRow label="Presión sistólica" score={result.components.systolicBP} />
-                <ComponentRow label="Pulso" score={result.components.pulse} />
-                <ComponentRow label="Conciencia" score={result.components.consciousness} />
-                <ComponentRow label="Temperatura" score={result.components.temperature} />
+                <ComponentRow label={t.mon.rr} score={result.components.respiratoryRate} />
+                <ComponentRow label={t.mon.spo2} score={result.components.spo2} />
+                <ComponentRow label={t.mon.componentO2} score={result.components.supplementalOxygen} />
+                <ComponentRow label={t.mon.sbp} score={result.components.systolicBP} />
+                <ComponentRow label={t.mon.pulse} score={result.components.pulse} />
+                <ComponentRow label={t.mon.consciousness} score={result.components.consciousness} />
+                <ComponentRow label={t.mon.temp} score={result.components.temperature} />
               </View>
-              <Text style={styles.protocolNote}>
-                NEWS2 — Royal College of Physicians. Evaluación determinística
-                calculada en el dispositivo, sin conexión.
-              </Text>
+              <Text style={styles.protocolNote}>{t.mon.protocolNote}</Text>
             </>
           )}
         </View>

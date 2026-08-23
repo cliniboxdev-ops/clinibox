@@ -23,12 +23,6 @@ export interface VitalsDriver {
 
 export type Scenario = "estable" | "deterioro" | "sepsis";
 
-export const SCENARIO_LABELS: Record<Scenario, string> = {
-  estable: "Paciente estable",
-  deterioro: "Deterioro progresivo",
-  sepsis: "Cuadro séptico",
-};
-
 interface ScenarioProfile {
   from: VitalsInput;
   to: VitalsInput;
