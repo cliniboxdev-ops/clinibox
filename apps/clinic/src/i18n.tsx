@@ -8,6 +8,7 @@ import {
 } from "react";
 import type { News2Result } from "@clinibox/protocol-engine";
 import type { Consciousness } from "@clinibox/protocol-engine";
+import type { CriticalConditionId } from "@clinibox/protocol-engine";
 import type { Scenario } from "./telemetry";
 import type { RegistrationErrorCode } from "./patients";
 import type { NextStepCode } from "./events";
@@ -76,6 +77,16 @@ interface Dict {
     steps: Record<NextStepCode, string>;
     allDone: string;
   };
+  alert: {
+    banner: string;
+    conditions: Record<CriticalConditionId, string>;
+    stepsTitle: string;
+    steps: Record<CriticalConditionId, string[]>;
+    lockNote: string;
+    resolve: string;
+    resolveHint: string;
+    sourceNote: string;
+  };
 }
 
 const en: Dict = {
@@ -123,6 +134,7 @@ const en: Dict = {
       estable: "Stable patient",
       deterioro: "Progressive deterioration",
       sepsis: "Septic presentation",
+      crash: "Sudden crash",
     },
     liveVitals: "Live vital signs",
     connecting: "Connecting to sensors…",
@@ -184,6 +196,42 @@ const en: Dict = {
     },
     allDone: "Nothing pending.",
   },
+  alert: {
+    banner: "CRITICAL ALERT",
+    conditions: {
+      unresponsive: "Patient unresponsive",
+      respiratory_distress: "Critical respiratory distress",
+      shock: "Suspected shock",
+    },
+    stepsTitle: "Stabilization steps — complete in order",
+    steps: {
+      unresponsive: [
+        "Check breathing and pulse (max 10 seconds)",
+        "No normal breathing: start CPR (30 compressions : 2 breaths)",
+        "Breathing normally: place in recovery position",
+        "Send for help / activate emergency evacuation now",
+        "Re-check breathing and pulse every 2 minutes",
+      ],
+      respiratory_distress: [
+        "Sit the patient upright; loosen tight clothing",
+        "Open and clear the airway (look for obstruction)",
+        "Give high-flow supplemental oxygen if available",
+        "Prepare assisted ventilation (bag-valve-mask)",
+        "Request urgent medical support / evacuation",
+      ],
+      shock: [
+        "Lay the patient flat; raise the legs if no trauma",
+        "Control any external bleeding with direct pressure",
+        "Keep the patient warm (blanket, remove wet clothing)",
+        "Give IV/oral fluids only if trained and no contraindication",
+        "Request urgent medical support / evacuation",
+      ],
+    },
+    lockNote: "App locked while the critical protocol is active.",
+    resolve: "Mark as handled",
+    resolveHint: "Complete all steps to enable",
+    sourceNote: "Adapted from WHO Basic Emergency Care (ABCDE). Re-triggers if the condition persists.",
+  },
 };
 
 const es: Dict = {
@@ -231,6 +279,7 @@ const es: Dict = {
       estable: "Paciente estable",
       deterioro: "Deterioro progresivo",
       sepsis: "Cuadro séptico",
+      crash: "Colapso súbito",
     },
     liveVitals: "Signos vitales en vivo",
     connecting: "Conectando sensores…",
@@ -291,6 +340,43 @@ const es: Dict = {
       sync_pending: "Sincronizar el registro con el servidor central al tener conexión",
     },
     allDone: "Nada pendiente.",
+  },
+  alert: {
+    banner: "ALERTA CRÍTICA",
+    conditions: {
+      unresponsive: "Paciente no responde",
+      respiratory_distress: "Dificultad respiratoria crítica",
+      shock: "Sospecha de shock",
+    },
+    stepsTitle: "Pasos de estabilización — complete en orden",
+    steps: {
+      unresponsive: [
+        "Verificar respiración y pulso (máximo 10 segundos)",
+        "Sin respiración normal: iniciar RCP (30 compresiones : 2 ventilaciones)",
+        "Respira normalmente: colocar en posición de recuperación",
+        "Pedir ayuda / activar evacuación de emergencia ahora",
+        "Reevaluar respiración y pulso cada 2 minutos",
+      ],
+      respiratory_distress: [
+        "Sentar al paciente erguido; aflojar ropa ajustada",
+        "Abrir y despejar la vía aérea (buscar obstrucción)",
+        "Administrar oxígeno de alto flujo si está disponible",
+        "Preparar ventilación asistida (bolsa-válvula-mascarilla)",
+        "Solicitar apoyo médico urgente / evacuación",
+      ],
+      shock: [
+        "Acostar al paciente; elevar las piernas si no hay trauma",
+        "Controlar hemorragias externas con presión directa",
+        "Mantener al paciente abrigado (manta, retirar ropa mojada)",
+        "Dar líquidos IV/orales solo con entrenamiento y sin contraindicación",
+        "Solicitar apoyo médico urgente / evacuación",
+      ],
+    },
+    lockNote: "Aplicación bloqueada mientras el protocolo crítico está activo.",
+    resolve: "Marcar como atendido",
+    resolveHint: "Complete todos los pasos para habilitar",
+    sourceNote:
+      "Adaptado de WHO Basic Emergency Care (ABCDE). Se reactiva si la condición persiste.",
   },
 };
 

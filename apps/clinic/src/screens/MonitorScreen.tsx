@@ -9,12 +9,13 @@ import {
 } from "react-native";
 import { scoreNews2, type News2Result } from "@clinibox/protocol-engine";
 import { listPatients, type StoredPatient } from "../patients";
-import { createSimulatorDriver, type Scenario, type VitalsSample } from "../telemetry";
+import type { Scenario } from "../telemetry";
 import { addEvent } from "../events";
 import { useI18n } from "../i18n";
 import { COLORS } from "../theme";
+import { useVitals } from "../vitals-context";
 
-const SCENARIOS: Scenario[] = ["estable", "deterioro", "sepsis"];
+const SCENARIOS: Scenario[] = ["estable", "deterioro", "sepsis", "crash"];
 
 const RISK_COLORS: Record<News2Result["risk"], string> = {
   low: COLORS.tealDark,
@@ -28,10 +29,9 @@ export default function MonitorScreen() {
   const { width } = useWindowDimensions();
   const dualPane = width >= 900;
 
+  const { scenario, setScenario, sample } = useVitals();
   const [patients, setPatients] = useState<StoredPatient[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [scenario, setScenario] = useState<Scenario>("estable");
-  const [sample, setSample] = useState<VitalsSample | null>(null);
 
   useEffect(() => {
     listPatients().then((p) => {
@@ -39,11 +39,6 @@ export default function MonitorScreen() {
       if (p.length > 0) setSelectedId((id) => id ?? p[0].patient.id);
     });
   }, []);
-
-  useEffect(() => {
-    const stop = createSimulatorDriver(scenario).start(setSample);
-    return stop;
-  }, [scenario]);
 
   const result = useMemo(() => (sample ? scoreNews2(sample) : null), [sample]);
   const selected = patients.find((p) => p.patient.id === selectedId);

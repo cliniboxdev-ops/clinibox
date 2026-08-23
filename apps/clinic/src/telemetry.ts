@@ -21,7 +21,7 @@ export interface VitalsDriver {
   start(onSample: (sample: VitalsSample) => void): () => void;
 }
 
-export type Scenario = "estable" | "deterioro" | "sepsis";
+export type Scenario = "estable" | "deterioro" | "sepsis" | "crash";
 
 interface ScenarioProfile {
   from: VitalsInput;
@@ -52,6 +52,13 @@ const PROFILES: Record<Scenario, ScenarioProfile> = {
     to: { respiratoryRate: 28, spo2: 91, onSupplementalOxygen: true, systolicBP: 88, pulse: 128, consciousness: "confusion", temperatureC: 39.6 },
     durationS: 45,
     consciousnessAt: 0.5,
+  },
+  crash: {
+    // sudden respiratory collapse: crosses SpO2<90 + HR>120 within ~15s
+    from: { respiratoryRate: 18, spo2: 97, onSupplementalOxygen: false, systolicBP: 115, pulse: 84, consciousness: ALERT, temperatureC: 36.9 },
+    to: { respiratoryRate: 32, spo2: 82, onSupplementalOxygen: false, systolicBP: 96, pulse: 138, consciousness: "voice", temperatureC: 36.5 },
+    durationS: 20,
+    consciousnessAt: 0.9,
   },
 };
 

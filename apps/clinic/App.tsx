@@ -1,18 +1,23 @@
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import CriticalAlertOverlay from "./src/components/CriticalAlertOverlay";
 import { I18nProvider, useI18n, type Lang } from "./src/i18n";
 import HistoryScreen from "./src/screens/HistoryScreen";
 import MonitorScreen from "./src/screens/MonitorScreen";
 import RegisterScreen from "./src/screens/RegisterScreen";
 import { COLORS } from "./src/theme";
+import { VitalsProvider } from "./src/vitals-context";
 
 type Tab = "pacientes" | "monitor" | "historial";
 
 export default function App() {
   return (
     <I18nProvider>
-      <Shell />
+      <VitalsProvider>
+        <Shell />
+        <CriticalAlertOverlay />
+      </VitalsProvider>
     </I18nProvider>
   );
 }
