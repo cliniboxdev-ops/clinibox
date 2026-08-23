@@ -14,6 +14,7 @@ import {
   type RegistrationError,
   type StoredPatient,
 } from "../patients";
+import { addEvent } from "../events";
 import { useI18n } from "../i18n";
 import { COLORS } from "../theme";
 
@@ -49,6 +50,7 @@ export default function RegisterScreen() {
     }
     setPatients((p) => [result.stored, ...p]);
     setForm(EMPTY_FORM);
+    await addEvent({ type: "registration", patientId: result.stored.patient.id });
     const name = result.stored.patient.name[0];
     setSaved(`${name.given.join(" ")} ${name.family}`);
   }, [form]);

@@ -10,13 +10,14 @@ import type { News2Result } from "@clinibox/protocol-engine";
 import type { Consciousness } from "@clinibox/protocol-engine";
 import type { Scenario } from "./telemetry";
 import type { RegistrationErrorCode } from "./patients";
+import type { NextStepCode } from "./events";
 
 export type Lang = "en" | "es";
 
 const LANG_KEY = "clinibox.lang.v1";
 
 interface Dict {
-  tabs: { patients: string; monitor: string };
+  tabs: { patients: string; monitor: string; history: string };
   reg: {
     dni: string;
     dniPlaceholder: string;
@@ -62,11 +63,23 @@ interface Dict {
     componentO2: string;
     alarm: string;
     protocolNote: string;
+    record: string;
+    recorded: string;
+    recordNeedsPatient: string;
+  };
+  hist: {
+    nextSteps: string;
+    timeline: string;
+    noEvents: string;
+    registrationEvent: string;
+    assessmentEvent: (score: number) => string;
+    steps: Record<NextStepCode, string>;
+    allDone: string;
   };
 }
 
 const en: Dict = {
-  tabs: { patients: "Patients", monitor: "Monitor" },
+  tabs: { patients: "Patients", monitor: "Monitor", history: "History" },
   reg: {
     dni: "DNI *",
     dniPlaceholder: "8 digits",
@@ -148,11 +161,33 @@ const en: Dict = {
     alarm: "ALARM",
     protocolNote:
       "NEWS2 — Royal College of Physicians. Deterministic assessment computed on-device, offline.",
+    record: "Record assessment",
+    recorded: "Assessment saved to patient history",
+    recordNeedsPatient: "Select a patient to record",
+  },
+  hist: {
+    nextSteps: "What needs to be done",
+    timeline: "What has been done",
+    noEvents: "No events for this patient yet.",
+    registrationEvent: "Patient registered",
+    assessmentEvent: (score) => `Vitals assessment — NEWS2 score ${score}`,
+    steps: {
+      record_vitals: "Record a first vitals assessment",
+      routine_monitoring_12h: "Routine monitoring (at least every 12 hours)",
+      urgent_review: "Urgent review by clinical staff",
+      monitor_hourly: "Monitor vitals at least hourly",
+      teleconsult: "Request medical teleconsultation",
+      emergency_care: "Immediate emergency medical attention",
+      continuous_monitoring: "Continuous vital-sign monitoring",
+      consider_evacuation: "Evaluate patient transfer/evacuation",
+      sync_pending: "Sync patient record to central server when online",
+    },
+    allDone: "Nothing pending.",
   },
 };
 
 const es: Dict = {
-  tabs: { patients: "Pacientes", monitor: "Monitor" },
+  tabs: { patients: "Pacientes", monitor: "Monitor", history: "Historial" },
   reg: {
     dni: "DNI *",
     dniPlaceholder: "8 dígitos",
@@ -234,6 +269,28 @@ const es: Dict = {
     alarm: "ALARMA",
     protocolNote:
       "NEWS2 — Royal College of Physicians. Evaluación determinística calculada en el dispositivo, sin conexión.",
+    record: "Registrar evaluación",
+    recorded: "Evaluación guardada en el historial del paciente",
+    recordNeedsPatient: "Seleccione un paciente para registrar",
+  },
+  hist: {
+    nextSteps: "Qué falta hacer",
+    timeline: "Qué se ha hecho",
+    noEvents: "Aún no hay eventos para este paciente.",
+    registrationEvent: "Paciente registrado",
+    assessmentEvent: (score) => `Evaluación de signos vitales — NEWS2 ${score}`,
+    steps: {
+      record_vitals: "Registrar una primera evaluación de signos vitales",
+      routine_monitoring_12h: "Monitoreo rutinario (mínimo cada 12 horas)",
+      urgent_review: "Revisión urgente por personal de salud",
+      monitor_hourly: "Monitorear signos vitales mínimo cada hora",
+      teleconsult: "Solicitar teleconsulta médica",
+      emergency_care: "Atención médica de emergencia inmediata",
+      continuous_monitoring: "Monitoreo continuo de signos vitales",
+      consider_evacuation: "Evaluar traslado/evacuación del paciente",
+      sync_pending: "Sincronizar el registro con el servidor central al tener conexión",
+    },
+    allDone: "Nada pendiente.",
   },
 };
 

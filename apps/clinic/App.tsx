@@ -2,11 +2,12 @@ import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { I18nProvider, useI18n, type Lang } from "./src/i18n";
+import HistoryScreen from "./src/screens/HistoryScreen";
 import MonitorScreen from "./src/screens/MonitorScreen";
 import RegisterScreen from "./src/screens/RegisterScreen";
 import { COLORS } from "./src/theme";
 
-type Tab = "pacientes" | "monitor";
+type Tab = "pacientes" | "monitor" | "historial";
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ function Shell() {
   const tabs: { id: Tab; label: string }[] = [
     { id: "pacientes", label: t.tabs.patients },
     { id: "monitor", label: t.tabs.monitor },
+    { id: "historial", label: t.tabs.history },
   ];
 
   return (
@@ -62,7 +64,9 @@ function Shell() {
           ))}
         </View>
       </View>
-      {tab === "pacientes" ? <RegisterScreen /> : <MonitorScreen />}
+      {tab === "pacientes" && <RegisterScreen />}
+      {tab === "monitor" && <MonitorScreen />}
+      {tab === "historial" && <HistoryScreen />}
     </View>
   );
 }

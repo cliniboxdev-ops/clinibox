@@ -10,6 +10,7 @@ import {
 import { scoreNews2, type News2Result } from "@clinibox/protocol-engine";
 import { listPatients, type StoredPatient } from "../patients";
 import { createSimulatorDriver, type Scenario, type VitalsSample } from "../telemetry";
+import { addEvent } from "../events";
 import { useI18n } from "../i18n";
 import { COLORS } from "../theme";
 
@@ -46,6 +47,22 @@ export default function MonitorScreen() {
 
   const result = useMemo(() => (sample ? scoreNews2(sample) : null), [sample]);
   const selected = patients.find((p) => p.patient.id === selectedId);
+  const [recordMsg, setRecordMsg] = useState<string | null>(null);
+
+  const onRecord = async () => {
+    if (!selected || !sample || !result) {
+      setRecordMsg(t.mon.recordNeedsPatient);
+      return;
+    }
+    await addEvent({
+      type: "assessment",
+      patientId: selected.patient.id,
+      vitals: sample,
+      news2: { total: result.total, risk: result.risk, redFlag: result.redFlag },
+    });
+    setRecordMsg(t.mon.recorded);
+    setTimeout(() => setRecordMsg(null), 4000);
+  };
 
   return (
     <ScrollView style={styles.body}>
@@ -158,6 +175,10 @@ export default function MonitorScreen() {
                 <ComponentRow label={t.mon.consciousness} score={result.components.consciousness} />
                 <ComponentRow label={t.mon.temp} score={result.components.temperature} />
               </View>
+              <Pressable style={styles.recordBtn} onPress={onRecord}>
+                <Text style={styles.recordBtnText}>{t.mon.record}</Text>
+              </Pressable>
+              {recordMsg && <Text style={styles.recordMsg}>{recordMsg}</Text>}
               <Text style={styles.protocolNote}>{t.mon.protocolNote}</Text>
             </>
           )}
@@ -261,4 +282,13 @@ const styles = StyleSheet.create({
   },
   componentScoreText: { color: "#fff", fontWeight: "700", fontSize: 13 },
   protocolNote: { marginTop: 12, fontSize: 11.5, color: COLORS.muted },
+  recordBtn: {
+    marginTop: 14,
+    backgroundColor: COLORS.navy,
+    borderRadius: 10,
+    paddingVertical: 12,
+    alignItems: "center",
+  },
+  recordBtnText: { color: "#fff", fontSize: 15, fontWeight: "700" },
+  recordMsg: { marginTop: 8, color: COLORS.tealDark, fontWeight: "600", fontSize: 13 },
 });
