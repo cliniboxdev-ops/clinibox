@@ -12,6 +12,12 @@
       "runtimeExecutable": "cmd",
       "runtimeArgs": ["/c", "pnpm", "--filter", "portal", "dev"],
       "port": 3100
+    },
+    {
+      "name": "clinic",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "pnpm", "--filter", "clinic", "web"],
+      "port": 8090
     }
   ]
 }
