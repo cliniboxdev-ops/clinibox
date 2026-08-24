@@ -4,7 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "wikem": "node src/wikem-acls.ts"
+    "wikem": "node src/wikem-acls.ts",
+    "seed": "node src/seed-triage.ts",
+    "build-db": "node src/build-db.ts",
+    "verify": "node src/verify-db.ts",
+    "all": "node src/seed-triage.ts && node src/build-db.ts && node src/verify-db.ts"
   },
   "dependencies": {
     "axios": "^1.7.9",

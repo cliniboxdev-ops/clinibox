@@ -27,28 +27,7 @@ const PAGES: { title: string; id: string; lang: "en" | "es" }[] = [
   { title: "ACLS (main)/es", id: "wikem-acls-main.es", lang: "es" },
 ];
 
-interface ProtocolSection {
-  heading: string;
-  level: number;
-  paragraphs: string[];
-  steps: string[];
-}
-
-interface ProtocolDocument {
-  id: string;
-  title: string;
-  lang: "en" | "es";
-  category: "resuscitation";
-  source: {
-    name: "WikEM";
-    url: string;
-    license: "CC BY-SA 4.0";
-    licenseUrl: string;
-    revisionId: number | null;
-    fetchedAt: string;
-  };
-  sections: ProtocolSection[];
-}
+import type { ProtocolDocument, ProtocolSection } from "./schema.ts";
 
 function cleanText(text: string): string {
   return text.replace(/\[\s*edit\s*\]/gi, "").replace(/\s+/g, " ").trim();
@@ -121,6 +100,7 @@ async function fetchPage(spec: (typeof PAGES)[number], outDir: string): Promise<
     title: page.title ?? spec.title,
     lang: spec.lang,
     category: "resuscitation",
+    severityTier: 1,
     source: {
       name: "WikEM",
       url: `https://wikem.org/wiki/${encodeURIComponent(spec.title.replace(/ /g, "_"))}`,

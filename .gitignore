@@ -1,5 +1,6 @@
 node_modules/
 .claude/settings.local.json
+data/protocols.db
 .next/
 .expo/
 dist/

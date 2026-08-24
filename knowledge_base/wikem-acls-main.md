@@ -1,0 +1,73 @@
+---
+id: wikem-acls-main
+title: "ACLS (main)"
+lang: en
+category: resuscitation
+source: "WikEM"
+source_url: https://wikem.org/wiki/ACLS_(main)
+license: "CC BY-SA 4.0"
+---
+
+# ACLS (main)
+
+## Overview
+
+See critical care quick reference for drug doses and equipment size by weight.
+
+.
+
+### Background
+
+- A series of clinical algorithms created by the AHA/ASA used in the treatment of cardiovascular/neurological emergencies.[1]
+- Involves airway management, IV access, and ECG interpretation.
+
+### ECG Analysis
+
+- What is the atrial and ventricular rate?
+- Is the rhythm regular or irregular?
+- If irregular, does it follow any repeatable pattern?
+- What is the axis?
+- ERAD often seen in VT but not SVT
+- What is the P wave amplitude, duration, morphology, and synchrony with QRS complex?
+- Is the P wave positive in Lead II
+- What is the QRS complex amplitude, duration, morphology?
+- What is the T wave amplitude, duration, morphology?
+- Is the T wave positive in Lead II
+- What is the length of PR and QT intervals?
+- Is there ST Elevation/Depression or Hyperacute T waves?
+- If yes, does it follow any anatomical pattern or is it diffuse?
+- Is there anything else abnormal about this ECG?
+- Pacemaker Spikes
+- Hypertrophy of atrial/ventricles
+
+### Algorithms
+
+- Adult Pulseless Arrest
+- Pulseless Ventricular Tachycardia/Ventricular Fibrillation
+- Pulseless Electrical Activity/Asystole
+- Cardiac Arrest In Pregnancy
+- Adult Post-Cardiac Arrest Care
+- Termination of Resuscitation
+- ACLS: Bradycardia (with pulse)
+- ACLS: Tachycardia (with pulse)
+- Acute coronary syndrome
+- Suspected cerebrovascular event
+
+### See Also
+
+- AHA ACLS Recommendation Changes by Year
+- ACLS (Treatable Conditions)
+- BLS (Main)
+- Critical care quick reference
+- Post cardiac arrest
+- PALS (Main)
+
+### External Links
+
+- 2020 AHA Guidelines
+- Numose EMed: The Pulseless Patient
+- Numose EMed: ACLS Bradycardia
+- Numose EMed: ACLS Narrow Complex Tachycardia
+- Numose EMed: ACLS Wide Complex Tachycardia
+
+> Source: WikEM — https://wikem.org/wiki/ACLS_(main) (CC BY-SA 4.0)

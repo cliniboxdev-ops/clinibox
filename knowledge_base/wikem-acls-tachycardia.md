@@ -1,0 +1,192 @@
+---
+id: wikem-acls-tachycardia
+title: "ACLS: tachycardia"
+lang: en
+category: resuscitation
+source: "WikEM"
+source_url: https://wikem.org/wiki/ACLS%3A_tachycardia
+license: "CC BY-SA 4.0"
+---
+
+# ACLS: tachycardia
+
+## Overview
+
+This page is for adult patients; for pediatric patients see PALS: Tachycardia
+
+### 3 questions
+
+- Is the patient in a sinus rhythm?
+- Is the QRS wide or narrow?
+- Is the rhythm regular or irregular?
+
+### Narrow-complex tachycardia
+
+<languages/> <translate>
+
+#### Narrow Regular Tachycardia
+
+</translate> <languages/> <translate>
+
+- Sinus tachycardia
+- Treat underlying cause
+- SVT
+- Vagal maneuvers (convert up to 25%)
+- Adenosine 6mg rapid IV push if patient hemodynamically stable (unstable should proceed directly to electrical cardioversion)
+- Can follow with repeat dose of 6 mg or 12mg if initially fails
+- If adenosine fails, initiate rate control with calcium channel blocker or beta blocker or use synchronized cardioversion
+- Diltiazem 15-20mg IV, followed by infusion of 5-15mg/hr
+- Metoprolol 5mg IVP x 3 followed by 50mg PO
+- Synchronized cardioversion (50-100J)
+- Provide sedation prior to synchronized cardioversion if patient is hemodynamically stable
+- Atrial flutter
+- Stable: Consider rate control to HR < 110 bpm
+- Unstable: Synchronized cardioversion; start at 50J
+
+#### Narrow Irregular Tachycardia
+
+</translate>
+
+- Multi-focal atrial tachycardia (MAT)
+- Treat underlying cause (hypokalemia, hypomagnesemia)
+- Consider diltiazem
+- Avoid beta blockers unless they are already known to be tolerated, as airway disease often co-morbid
+- If not symptomatic and rate < 110/120 bpm, may not require treatment (e.g., patient with MAT secondary to COPD)
+- Sinus tachycardia with frequent PACs
+- Treat underlying cause
+- A fib / A Flutter with variable conduction (see also Atrial Fibrillation with RVR)
+- Check if patient has taken usual rate-control meds
+- If missed dose, may provide dose of home medication and observe for resolution
+- Determine whether patient is better candidate for rate control or rhythm control [2]
+- Rate control preferred with:
+- Persistent A fib
+- Less symptomatic patients
+- Age 65 or older
+- Hypertension
+- No heart failure
+- Previous failure to cardiovert
+- Patient preference
+- Rhythm control preferred with:
+- Paroxysmal or new A fib
+- More symptomatic patients
+- Age < 65 years
+- Heart failure clearly exacerbated by A fib
+- No history of rhythm control failure
+- Patient preference
+- Rate control with:
+- Diltiazem
+- Metoprolol
+- Amiodarone (good in setting of hypotension, CHF)
+- Digoxin (good in setting of CHF)
+- Rhythm conversion with:
+- Synchronized Cardioversion (120-200 J)
+- Best performed on patients with new onset A fib or patients fully therapeutically anti-coagulated for > 3 weeks
+- Procainamide per Ottawa Aggressive ED Cardioversion Protocol
+
+### Wide-complex tachycardia
+
+<translate>
+
+#### Wide Regular Tachycardia[3]
+
+Pulseless: see Adult pulseless arrest
+
+</translate> <languages/> <translate>
+
+- Unstable: Hypotension, altered mental status, shock, ischemic chest discomfort, acute heart failure
+- Synchronized cardioversion 100-200J
+- Stable:
+- Medications
+- Procainamide (first-line drug of choice)
+- 20-50 mg/min until arrhythmia suppressed (max 17mg/kg or 1 gram); then, maintenance infusion of 1-4mg/min x 6hr
+- Alternative administration: 100 mg q5min at max rate of 25-50 mg/min[4]
+- Stop if QRS duration increases >50% or hypotension
+- Avoid if prolonged QT or CHF
+- Favored over Amiodarone in PROCAMIO trial; termination of tachycardia in 67% of procainamide group vs 38% of amiodarone group, adverse cardiac events 9% vs 41%, respectively [5]
+- Amiodarone (agent of choice in setting of AMI or LV dysfunction)
+- 150 mg over 10min (15 mg/min), followed by 1 mg/min drip over 6hrs (360 mg total)[6]
+- Then 0.5 mg/min drip over next 18 hrs (540 mg total)
+- Oral dosage after IV infusion is 400 -800 mg PO daily
+- Consider adenosine
+- Consider for diagnosis and treatment, if rhythm is regular and monomorphic (see rhythm diagnosis in regular wide complex tachycardia)
+- 6 mg IV as a rapid IV push followed by a 20 mL saline flush; repeat if required as 12 mg IV push
+- Synchronized cardioversion (100J)
+
+#### Wide Irregular Tachycardia
+
+</translate>
+
+- Unstable: Hypotension, altered mental status, shock, ischemic chest discomfort, acute heart failure
+- Unsynchronized cardioversion (defibrillation) 200J
+- Stable:
+- A fib with preexcitation
+- 1st line - Electric Cardioversion
+- 2nd line - Procainamide, amiodarone, or sotalol
+- A fib with aberrancy
+- Polymorphic V-Tach / Torsades De Pointes
+- Give IV MgSO4
+- Emergent defibrillation (NOT synchronized)
+- Correct electrolyte abnormalities (esp hypoK, hypoMg)
+- Stop prolonged QT meds
+
+#### Narrow-complex tachycardia
+
+- Regular
+- AV Node Independent
+- Sinus tachycardia
+- Atrial tachycardia (uni-focal or multi-focal)
+- Atrial fibrillation
+- Atrial flutter
+- Idiopathic fascicular left ventricular tachycardia
+- AV Node Dependent
+- Paroxysmal supraventricular tachycardia (PSVT)
+- AV node re-entry tachycardia (AVNRT)
+- AV re-entry tachycardia (AVRT)
+- Lown-Ganong-Levine syndrome
+- Wolff–Parkinson–White syndrome
+- Junctional tachycardia
+- Irregular
+- Multifocal atrial tachycardia (MAT)
+- Sinus tachycardia with frequent PACs, PJCs, PVCs
+- Atrial fibrillation
+- Atrial fibrillation with RVR
+- Atrial flutter with variable conduction
+- Digoxin Toxicity
+
+#### Wide-complex tachycardia
+
+Assume any wide-complex tachycardia is ventricular tachycardia until proven otherwise (it is safer to incorrectly assume a ventricular dysrhythmia than supraventricular tachycardia with abberancy)
+
+^Fixed or rate-related
+
+- Regular
+- Monomorphic ventricular tachycardia
+- PSVT with aberrant conduction:
+- PSVT with bundle branch block^
+- PSVT with accessory pathway
+- Atrial flutter with bundle branch block^
+- Sinus tachycardia with bundle branch block^
+- Accelerated idioventricular rhythm (consider if less than or ~120 bpm)
+- Metabolic
+- Hyperkalemia
+- Digoxin toxicity
+- Severe metabolic acidosis
+- Irregular
+- Atrial fibrillation/atrial flutter with variable AV conduction AND bundle branch block^
+- Atrial fibrillation/atrial flutter with variable AV conduction AND accessory pathway (e.g. WPW)
+- Atrial fibrillation + hyperkalemia
+- Polymorphic ventricular tachycardia
+- Torsades de pointes
+- Nonsustained ventricular tachycardia
+
+### See Also
+
+- ACLS (Main)
+- Wide complex tachycardia
+- Narrow complex tachycardia
+
+### External Links
+
+- DDxOf: Simplified ACLS Algorithms
+
+> Source: WikEM — https://wikem.org/wiki/ACLS%3A_tachycardia (CC BY-SA 4.0)

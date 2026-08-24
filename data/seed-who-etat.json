@@ -1,0 +1,77 @@
+{
+  "id": "seed-who-etat",
+  "title": "WHO ETAT Pediatric Triage (Emergency Triage Assessment and Treatment)",
+  "lang": "en",
+  "category": "pediatric",
+  "severityTier": 1,
+  "triggers": [
+    {
+      "description": "Capillary refill > 3 s with cold hands and weak fast pulse → EMERGENCY",
+      "parameter": "capillaryRefillSec",
+      "op": ">",
+      "value": 3,
+      "outcome": "emergency"
+    },
+    {
+      "description": "Coma or convulsing → EMERGENCY",
+      "parameter": "consciousness",
+      "op": "==",
+      "value": "unresponsive",
+      "outcome": "emergency"
+    }
+  ],
+  "sections": [
+    {
+      "heading": "Overview",
+      "level": 1,
+      "paragraphs": [
+        "Triage of all sick children on arrival: assign EMERGENCY (immediate treatment), PRIORITY (front of queue), or QUEUE (routine). Check emergency signs first — treatment starts before full assessment."
+      ],
+      "steps": []
+    },
+    {
+      "heading": "Emergency signs (ABCD) — treat immediately",
+      "level": 2,
+      "paragraphs": [],
+      "steps": [
+        "Airway/Breathing: obstructed breathing, central cyanosis, or severe respiratory distress.",
+        "Circulation: cold hands with capillary refill longer than 3 seconds and weak, fast pulse.",
+        "Coma / Convulsions: unconscious child or currently convulsing.",
+        "Dehydration (severe): lethargy, sunken eyes, very slow skin pinch return — in a child with diarrhoea."
+      ]
+    },
+    {
+      "heading": "Priority signs — front of the queue",
+      "level": 2,
+      "paragraphs": [],
+      "steps": [
+        "Tiny baby: any sick infant under 2 months.",
+        "Temperature: child is very hot (high fever).",
+        "Trauma or other urgent surgical condition.",
+        "Severe pallor (palmar pallor).",
+        "Poisoning history.",
+        "Severe pain.",
+        "Respiratory distress (not severe).",
+        "Restless, continuously irritable, or lethargic.",
+        "Urgent referral from another facility.",
+        "Severe malnutrition (visible severe wasting).",
+        "Oedema of both feet.",
+        "Major burns."
+      ]
+    },
+    {
+      "heading": "No emergency or priority signs",
+      "level": 2,
+      "paragraphs": [
+        "QUEUE: assess and treat in order of arrival."
+      ],
+      "steps": []
+    }
+  ],
+  "source": {
+    "name": "WHO — Emergency Triage Assessment and Treatment (ETAT)",
+    "url": "https://www.who.int/publications/i/item/9241546875",
+    "license": "Clinibox structured summary of WHO guideline",
+    "fetchedAt": "2026-08-24T00:00:00.000Z"
+  }
+}

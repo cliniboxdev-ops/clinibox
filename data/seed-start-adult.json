@@ -1,0 +1,67 @@
+{
+  "id": "seed-start-adult",
+  "title": "START Adult Triage (Simple Triage and Rapid Treatment)",
+  "lang": "en",
+  "category": "triage",
+  "severityTier": 1,
+  "triggers": [
+    {
+      "description": "Respiratory rate > 30/min → IMMEDIATE (red)",
+      "parameter": "respiratoryRate",
+      "op": ">",
+      "value": 30,
+      "outcome": "immediate"
+    },
+    {
+      "description": "Capillary refill > 2 s or no radial pulse → IMMEDIATE (red)",
+      "parameter": "capillaryRefillSec",
+      "op": ">",
+      "value": 2,
+      "outcome": "immediate"
+    },
+    {
+      "description": "Cannot follow simple commands → IMMEDIATE (red)",
+      "parameter": "consciousness",
+      "op": "==",
+      "value": "not-following-commands",
+      "outcome": "immediate"
+    },
+    {
+      "description": "Not breathing after one airway repositioning → EXPECTANT (black)",
+      "outcome": "expectant"
+    },
+    {
+      "description": "Able to walk → MINOR (green)",
+      "outcome": "minor"
+    }
+  ],
+  "sections": [
+    {
+      "heading": "Overview",
+      "level": 1,
+      "paragraphs": [
+        "Mass-casualty triage for adults. Assess each patient in under 60 seconds and assign a category: MINOR (green), DELAYED (yellow), IMMEDIATE (red), or EXPECTANT (black). The only interventions during START are airway repositioning and control of severe hemorrhage."
+      ],
+      "steps": []
+    },
+    {
+      "heading": "Algorithm",
+      "level": 2,
+      "paragraphs": [],
+      "steps": [
+        "1. Able to walk? Yes → MINOR (green). Direct to designated area and reassess later.",
+        "2. Not walking: is the patient breathing? No → reposition the airway once. Still not breathing → EXPECTANT (black). Breathing after repositioning → IMMEDIATE (red).",
+        "3. Breathing: respiratory rate over 30/min → IMMEDIATE (red).",
+        "4. Respiratory rate 30/min or less: check perfusion. Capillary refill over 2 seconds or no radial pulse → IMMEDIATE (red); control severe bleeding.",
+        "5. Perfusion adequate: check mental status. Cannot follow simple commands → IMMEDIATE (red).",
+        "6. Follows commands → DELAYED (yellow)."
+      ]
+    }
+  ],
+  "source": {
+    "name": "START — CHEMM/REMM (US Department of Health and Human Services)",
+    "url": "https://chemm.hhs.gov/startadult.htm",
+    "license": "Public domain (US Government); Clinibox structured summary",
+    "fetchedAt": "2026-08-24T00:00:00.000Z"
+  }
+}
