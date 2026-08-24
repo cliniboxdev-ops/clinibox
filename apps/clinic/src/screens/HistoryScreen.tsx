@@ -6,6 +6,7 @@ import {
   listEvents,
   type ClinicalEvent,
 } from "../events";
+import TrendCard from "../components/TrendCard";
 import { useI18n } from "../i18n";
 import { COLORS } from "../theme";
 
@@ -78,6 +79,8 @@ export default function HistoryScreen() {
 
       {selected && (
         <>
+          <TrendCard events={events} />
+
           {/* pending actions */}
           <View style={styles.card}>
             <Text style={styles.cardTitle}>{t.hist.nextSteps}</Text>
@@ -116,6 +119,9 @@ export default function HistoryScreen() {
                     {e.type === "registration"
                       ? t.hist.registrationEvent
                       : t.hist.assessmentEvent(e.news2.total)}
+                    {e.type === "assessment" && e.demo ? (
+                      <Text style={styles.demoTag}> · {t.hist.demoTag}</Text>
+                    ) : null}
                   </Text>
                   {e.type === "assessment" && (
                     <View style={styles.eventMetaRow}>
@@ -209,4 +215,5 @@ const styles = StyleSheet.create({
   riskChipText: { color: "#fff", fontSize: 10.5, fontWeight: "700" },
   eventMeta: { fontSize: 12.5, color: COLORS.muted },
   eventTime: { fontSize: 12, color: COLORS.muted, marginTop: 4 },
+  demoTag: { fontSize: 11.5, fontWeight: "700", color: COLORS.warn },
 });

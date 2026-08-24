@@ -24,6 +24,8 @@ export interface AssessmentEvent extends BaseEvent {
   type: "assessment";
   vitals: VitalsSample;
   news2: Pick<News2Result, "total" | "risk" | "redFlag">;
+  /** true for synthetic training/demo data — never real patient measurements */
+  demo?: boolean;
 }
 
 export type ClinicalEvent = RegistrationEvent | AssessmentEvent;
@@ -58,6 +60,70 @@ export async function addEvent(
   all.push(full);
   await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(all));
   return full;
+}
+
+/**
+ * Seeds synthetic back-dated assessments so trend analysis can be
+ * demonstrated and practised without waiting hours. Events are tagged
+ * `demo: true` and labelled in the UI.
+ */
+export async function seedDemoHistory(
+  patientId: string,
+  shape: "stable" | "deteriorating",
+  hours = 12,
+  count = 6,
+): Promise<void> {
+  const all = await loadAll();
+  const now = Date.now();
+
+  for (let i = 0; i < count; i++) {
+    // oldest first, evenly spaced across the window
+    const progress = i / (count - 1);
+    const timestamp = new Date(now - (hours - progress * hours) * 3_600_000).toISOString();
+
+    const vitals: VitalsSample =
+      shape === "stable"
+        ? {
+            respiratoryRate: 16,
+            spo2: 97,
+            onSupplementalOxygen: false,
+            systolicBP: 118,
+            pulse: 74,
+            consciousness: "alert",
+            temperatureC: 36.8,
+            timestamp,
+            source: "simulator",
+          }
+        : {
+            respiratoryRate: Math.round(16 + progress * 8),
+            spo2: Math.round(97 - progress * 8),
+            onSupplementalOxygen: progress > 0.7,
+            systolicBP: Math.round(120 - progress * 25),
+            pulse: Math.round(74 + progress * 40),
+            consciousness: "alert",
+            temperatureC: Number((36.8 + progress * 1.6).toFixed(1)),
+            timestamp,
+            source: "simulator",
+          };
+
+    const total =
+      shape === "stable"
+        ? 0
+        : Math.round(progress * 6); // rises across the window
+    const risk: News2Result["risk"] =
+      total >= 7 ? "high" : total >= 5 ? "medium" : total >= 3 ? "low-medium" : "low";
+
+    all.push({
+      type: "assessment",
+      id: makeId(),
+      patientId,
+      timestamp,
+      vitals,
+      news2: { total, risk, redFlag: false },
+      demo: true,
+    });
+  }
+  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(all));
 }
 
 /** Deterministic to-do codes derived from patient state; i18n maps to text. */

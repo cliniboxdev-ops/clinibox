@@ -8,7 +8,11 @@ import {
 } from "react";
 import type { News2Result } from "@clinibox/protocol-engine";
 import type { Consciousness } from "@clinibox/protocol-engine";
-import type { CriticalConditionId } from "@clinibox/protocol-engine";
+import type {
+  CriticalConditionId,
+  TrendActionCode,
+  TrendDirection,
+} from "@clinibox/protocol-engine";
 import type { Scenario } from "./telemetry";
 import type { RegistrationErrorCode } from "./patients";
 import type { NextStepCode } from "./events";
@@ -73,6 +77,9 @@ interface Dict {
     record: string;
     recorded: string;
     recordNeedsPatient: string;
+    demoHistory: string;
+    demoStable: string;
+    demoDeteriorating: string;
   };
   hist: {
     nextSteps: string;
@@ -82,6 +89,7 @@ interface Dict {
     assessmentEvent: (score: number) => string;
     steps: Record<NextStepCode, string>;
     allDone: string;
+    demoTag: string;
   };
   alert: {
     banner: string;
@@ -92,6 +100,14 @@ interface Dict {
     resolve: string;
     resolveHint: string;
     sourceNote: string;
+  };
+  trend: {
+    title: string;
+    directions: Record<TrendDirection, string>;
+    actions: Record<TrendActionCode, string>;
+    observed: (hours: number, count: number) => string;
+    deltas: (spo2: number, pulse: number, news2: number) => string;
+    advisory: string;
   };
   clinic: {
     nameLabel: string;
@@ -200,6 +216,9 @@ const en: Dict = {
     record: "Record assessment",
     recorded: "Assessment saved to patient history",
     recordNeedsPatient: "Select a patient to record",
+    demoHistory: "Training data — adds 12 h of synthetic assessments, tagged as demo",
+    demoStable: "Seed stable 12 h",
+    demoDeteriorating: "Seed deteriorating 12 h",
   },
   hist: {
     nextSteps: "What needs to be done",
@@ -219,6 +238,7 @@ const en: Dict = {
       sync_pending: "Sync patient record to central server when online",
     },
     allDone: "Nothing pending.",
+    demoTag: "DEMO DATA",
   },
   alert: {
     banner: "CRITICAL ALERT",
@@ -255,6 +275,32 @@ const en: Dict = {
     resolve: "Mark as handled",
     resolveHint: "Complete all steps to enable",
     sourceNote: "Adapted from WHO Basic Emergency Care (ABCDE). Re-triggers if the condition persists.",
+  },
+  trend: {
+    title: "Trend & disposition",
+    directions: {
+      improving: "IMPROVING",
+      stable: "STABLE",
+      worsening: "WORSENING",
+      "insufficient-data": "NOT ENOUGH DATA",
+    },
+    actions: {
+      need_more_assessments:
+        "Record at least 3 assessments over 2+ hours to establish a trend",
+      continue_monitoring: "Continue current monitoring schedule",
+      extend_observation: "Keep under observation — do not discharge yet",
+      discharge_candidate_morning:
+        "Stable throughout — candidate for discharge in the morning after a final check",
+      review_deterioration: "Review the patient: measurements are trending worse",
+      escalate_transfer_24h:
+        "Sustained deterioration — arrange transfer to hospital within 24 hours",
+      escalate_immediate: "Deteriorating and currently high risk — escalate now",
+    },
+    observed: (hours, count) => `${count} assessments over ${hours} h`,
+    deltas: (spo2, pulse, news2) =>
+      `SpO₂ ${spo2 >= 0 ? "+" : ""}${spo2}% · pulse ${pulse >= 0 ? "+" : ""}${pulse} bpm · NEWS2 ${news2 >= 0 ? "+" : ""}${news2}`,
+    advisory:
+      "Decision support only — the treating clinician decides. Based on recorded assessments in the last 24 h.",
   },
   clinic: {
     nameLabel: "Clinic name",
@@ -387,6 +433,10 @@ const es: Dict = {
     record: "Registrar evaluación",
     recorded: "Evaluación guardada en el historial del paciente",
     recordNeedsPatient: "Seleccione un paciente para registrar",
+    demoHistory:
+      "Datos de entrenamiento — agrega 12 h de evaluaciones sintéticas, marcadas como demo",
+    demoStable: "Simular 12 h estable",
+    demoDeteriorating: "Simular 12 h en deterioro",
   },
   hist: {
     nextSteps: "Qué falta hacer",
@@ -406,6 +456,7 @@ const es: Dict = {
       sync_pending: "Sincronizar el registro con el servidor central al tener conexión",
     },
     allDone: "Nada pendiente.",
+    demoTag: "DATOS DEMO",
   },
   alert: {
     banner: "ALERTA CRÍTICA",
@@ -443,6 +494,32 @@ const es: Dict = {
     resolveHint: "Complete todos los pasos para habilitar",
     sourceNote:
       "Adaptado de WHO Basic Emergency Care (ABCDE). Se reactiva si la condición persiste.",
+  },
+  trend: {
+    title: "Tendencia y disposición",
+    directions: {
+      improving: "MEJORANDO",
+      stable: "ESTABLE",
+      worsening: "EMPEORANDO",
+      "insufficient-data": "DATOS INSUFICIENTES",
+    },
+    actions: {
+      need_more_assessments:
+        "Registre al menos 3 evaluaciones en 2+ horas para establecer una tendencia",
+      continue_monitoring: "Continuar el monitoreo según lo programado",
+      extend_observation: "Mantener en observación — aún no dar de alta",
+      discharge_candidate_morning:
+        "Estable en todo el período — candidato a alta en la mañana tras un control final",
+      review_deterioration: "Revisar al paciente: las mediciones van empeorando",
+      escalate_transfer_24h:
+        "Deterioro sostenido — gestionar traslado a hospital en las próximas 24 horas",
+      escalate_immediate: "Deteriorándose y en riesgo alto — escalar ahora",
+    },
+    observed: (hours, count) => `${count} evaluaciones en ${hours} h`,
+    deltas: (spo2, pulse, news2) =>
+      `SpO₂ ${spo2 >= 0 ? "+" : ""}${spo2}% · pulso ${pulse >= 0 ? "+" : ""}${pulse} lpm · NEWS2 ${news2 >= 0 ? "+" : ""}${news2}`,
+    advisory:
+      "Solo apoyo a la decisión — decide el personal tratante. Basado en las evaluaciones registradas en las últimas 24 h.",
   },
   clinic: {
     nameLabel: "Nombre del establecimiento",

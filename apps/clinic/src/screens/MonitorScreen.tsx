@@ -10,7 +10,8 @@ import {
 import { scoreNews2, type News2Result } from "@clinibox/protocol-engine";
 import { listPatients, type StoredPatient } from "../patients";
 import type { Scenario } from "../telemetry";
-import { addEvent } from "../events";
+import { addEvent, listEvents, seedDemoHistory, type ClinicalEvent } from "../events";
+import TrendCard from "../components/TrendCard";
 import { useI18n } from "../i18n";
 import { COLORS } from "../theme";
 import { useVitals } from "../vitals-context";
@@ -43,6 +44,12 @@ export default function MonitorScreen() {
   const result = useMemo(() => (sample ? scoreNews2(sample) : null), [sample]);
   const selected = patients.find((p) => p.patient.id === selectedId);
   const [recordMsg, setRecordMsg] = useState<string | null>(null);
+  const [events, setEvents] = useState<ClinicalEvent[]>([]);
+
+  useEffect(() => {
+    if (selectedId) listEvents(selectedId).then(setEvents);
+    else setEvents([]);
+  }, [selectedId]);
 
   const onRecord = async () => {
     if (!selected || !sample || !result) {
@@ -55,8 +62,15 @@ export default function MonitorScreen() {
       vitals: sample,
       news2: { total: result.total, risk: result.risk, redFlag: result.redFlag },
     });
+    setEvents(await listEvents(selected.patient.id));
     setRecordMsg(t.mon.recorded);
     setTimeout(() => setRecordMsg(null), 4000);
+  };
+
+  const onSeedDemo = async (shape: "stable" | "deteriorating") => {
+    if (!selected) return;
+    await seedDemoHistory(selected.patient.id, shape);
+    setEvents(await listEvents(selected.patient.id));
   };
 
   return (
@@ -179,6 +193,24 @@ export default function MonitorScreen() {
           )}
         </View>
       </View>
+
+      {selected && (
+        <>
+          <View style={{ height: 12 }} />
+          <TrendCard events={events} />
+          <View style={styles.demoRow}>
+            <Text style={styles.demoLabel}>{t.mon.demoHistory}</Text>
+            <View style={styles.chipRow}>
+              <Pressable style={styles.demoBtn} onPress={() => onSeedDemo("stable")}>
+                <Text style={styles.demoBtnText}>{t.mon.demoStable}</Text>
+              </Pressable>
+              <Pressable style={styles.demoBtn} onPress={() => onSeedDemo("deteriorating")}>
+                <Text style={styles.demoBtnText}>{t.mon.demoDeteriorating}</Text>
+              </Pressable>
+            </View>
+          </View>
+        </>
+      )}
       <View style={{ height: 40 }} />
     </ScrollView>
   );
@@ -286,4 +318,22 @@ const styles = StyleSheet.create({
   },
   recordBtnText: { color: "#fff", fontSize: 15, fontWeight: "700" },
   recordMsg: { marginTop: 8, color: COLORS.tealDark, fontWeight: "600", fontSize: 13 },
+  demoRow: {
+    backgroundColor: "#fff",
+    borderRadius: 14,
+    borderWidth: 1,
+    borderStyle: "dashed",
+    borderColor: COLORS.line,
+    padding: 14,
+  },
+  demoLabel: { fontSize: 12, color: COLORS.muted, marginBottom: 8 },
+  demoBtn: {
+    borderWidth: 1,
+    borderColor: COLORS.line,
+    borderRadius: 100,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    backgroundColor: "#fbfdff",
+  },
+  demoBtnText: { fontSize: 12.5, color: COLORS.ink, fontWeight: "500" },
 });
