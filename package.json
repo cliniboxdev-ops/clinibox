@@ -5,6 +5,9 @@
   "scripts": {
     "portal": "pnpm --filter portal dev",
     "clinic": "pnpm --filter clinic start",
+    "clinic:web": "pnpm --filter clinic web",
+    "knowledge": "pnpm --filter @clinibox/ingest all",
+    "test": "pnpm -r test",
     "build": "pnpm -r build",
     "lint": "pnpm -r lint",
     "typecheck": "pnpm -r typecheck"
