@@ -12,13 +12,19 @@ import type { CriticalConditionId } from "@clinibox/protocol-engine";
 import type { Scenario } from "./telemetry";
 import type { RegistrationErrorCode } from "./patients";
 import type { NextStepCode } from "./events";
+import type {
+  DeviceId,
+  FacilityCategory,
+  PersonnelRole,
+  PowerStatus,
+} from "./clinic-profile";
 
 export type Lang = "en" | "es";
 
 const LANG_KEY = "clinibox.lang.v1";
 
 interface Dict {
-  tabs: { patients: string; monitor: string; history: string };
+  tabs: { patients: string; monitor: string; history: string; clinic: string };
   reg: {
     dni: string;
     dniPlaceholder: string;
@@ -87,10 +93,28 @@ interface Dict {
     resolveHint: string;
     sourceNote: string;
   };
+  clinic: {
+    nameLabel: string;
+    namePlaceholder: string;
+    categoryLabel: string;
+    categories: Record<FacilityCategory, string>;
+    bedsLabel: string;
+    personnelLabel: string;
+    roles: Record<PersonnelRole, string>;
+    devicesLabel: string;
+    deviceNames: Record<DeviceId, string>;
+    powerLabel: string;
+    powerSource: Record<PowerStatus["source"], string>;
+    powerState: Record<PowerStatus["state"], string>;
+    battery: string;
+    reportedBy: string;
+    save: string;
+    savedMsg: string;
+  };
 }
 
 const en: Dict = {
-  tabs: { patients: "Patients", monitor: "Monitor", history: "History" },
+  tabs: { patients: "Patients", monitor: "Monitor", history: "History", clinic: "Clinic" },
   reg: {
     dni: "DNI *",
     dniPlaceholder: "8 digits",
@@ -232,10 +256,52 @@ const en: Dict = {
     resolveHint: "Complete all steps to enable",
     sourceNote: "Adapted from WHO Basic Emergency Care (ABCDE). Re-triggers if the condition persists.",
   },
+  clinic: {
+    nameLabel: "Clinic name",
+    namePlaceholder: "e.g. Posta de Salud San Juan",
+    categoryLabel: "Facility category (MINSA, Peru)",
+    categories: {
+      "I-1": "I-1 — Health post (no physician)",
+      "I-2": "I-2 — Health post with physician",
+      "I-3": "I-3 — Health center, outpatient only",
+      "I-4": "I-4 — Health center with inpatient beds",
+      "II-1": "II-1 — General hospital, basic specialties",
+      "II-2": "II-2 — Hospital with more specialties / ICU",
+      "III-1": "III-1 — Highly specialized hospital",
+      "III-2": "III-2 — National specialized institute",
+    },
+    bedsLabel: "Number of beds",
+    personnelLabel: "Personnel",
+    roles: {
+      physician: "Physician",
+      nurse: "Nurse",
+      obstetrician: "Obstetrician (midwife)",
+      nursing_technician: "Nursing technician",
+      health_promoter: "Community health promoter",
+    },
+    devicesLabel: "Medical devices available",
+    deviceNames: {
+      vitals_monitor: "Multiparameter vitals monitor",
+      pulse_oximeter: "Pulse oximeter",
+      bp_monitor: "Blood pressure monitor",
+      thermometer: "Thermometer",
+      ecg: "ECG",
+      aed: "Defibrillator (AED)",
+      oxygen_concentrator: "Oxygen concentrator",
+      ultrasound: "Ultrasound",
+    },
+    powerLabel: "Electricity",
+    powerSource: { grid: "Mains power", solar: "Solar", battery: "On battery" },
+    powerState: { ok: "OK", unstable: "Unstable", down: "Down" },
+    battery: "Battery",
+    reportedBy: "Reported by the Clinibox unit",
+    save: "Save profile",
+    savedMsg: "Clinic profile saved",
+  },
 };
 
 const es: Dict = {
-  tabs: { patients: "Pacientes", monitor: "Monitor", history: "Historial" },
+  tabs: { patients: "Pacientes", monitor: "Monitor", history: "Historial", clinic: "Clínica" },
   reg: {
     dni: "DNI *",
     dniPlaceholder: "8 dígitos",
@@ -377,6 +443,48 @@ const es: Dict = {
     resolveHint: "Complete todos los pasos para habilitar",
     sourceNote:
       "Adaptado de WHO Basic Emergency Care (ABCDE). Se reactiva si la condición persiste.",
+  },
+  clinic: {
+    nameLabel: "Nombre del establecimiento",
+    namePlaceholder: "ej. Posta de Salud San Juan",
+    categoryLabel: "Categoría del establecimiento (MINSA, Perú)",
+    categories: {
+      "I-1": "I-1 — Puesto de salud (sin médico)",
+      "I-2": "I-2 — Puesto de salud con médico",
+      "I-3": "I-3 — Centro de salud sin internamiento",
+      "I-4": "I-4 — Centro de salud con internamiento",
+      "II-1": "II-1 — Hospital general, especialidades básicas",
+      "II-2": "II-2 — Hospital con más especialidades / UCI",
+      "III-1": "III-1 — Hospital altamente especializado",
+      "III-2": "III-2 — Instituto especializado nacional",
+    },
+    bedsLabel: "Número de camas",
+    personnelLabel: "Personal",
+    roles: {
+      physician: "Médico/a",
+      nurse: "Enfermero/a",
+      obstetrician: "Obstetra",
+      nursing_technician: "Técnico/a de enfermería",
+      health_promoter: "Promotor/a de salud",
+    },
+    devicesLabel: "Equipos médicos disponibles",
+    deviceNames: {
+      vitals_monitor: "Monitor multiparámetro",
+      pulse_oximeter: "Pulsioxímetro",
+      bp_monitor: "Tensiómetro",
+      thermometer: "Termómetro",
+      ecg: "Electrocardiógrafo",
+      aed: "Desfibrilador (DEA)",
+      oxygen_concentrator: "Concentrador de oxígeno",
+      ultrasound: "Ecógrafo",
+    },
+    powerLabel: "Electricidad",
+    powerSource: { grid: "Red eléctrica", solar: "Solar", battery: "Con batería" },
+    powerState: { ok: "OK", unstable: "Inestable", down: "Sin energía" },
+    battery: "Batería",
+    reportedBy: "Reportado por la unidad Clinibox",
+    save: "Guardar perfil",
+    savedMsg: "Perfil de la clínica guardado",
   },
 };
 

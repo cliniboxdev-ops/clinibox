@@ -3,13 +3,14 @@ import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import CriticalAlertOverlay from "./src/components/CriticalAlertOverlay";
 import { I18nProvider, useI18n, type Lang } from "./src/i18n";
+import ClinicScreen from "./src/screens/ClinicScreen";
 import HistoryScreen from "./src/screens/HistoryScreen";
 import MonitorScreen from "./src/screens/MonitorScreen";
 import RegisterScreen from "./src/screens/RegisterScreen";
 import { COLORS } from "./src/theme";
 import { VitalsProvider } from "./src/vitals-context";
 
-type Tab = "pacientes" | "monitor" | "historial";
+type Tab = "pacientes" | "monitor" | "historial" | "clinica";
 
 export default function App() {
   return (
@@ -30,6 +31,7 @@ function Shell() {
     { id: "pacientes", label: t.tabs.patients },
     { id: "monitor", label: t.tabs.monitor },
     { id: "historial", label: t.tabs.history },
+    { id: "clinica", label: t.tabs.clinic },
   ];
 
   return (
@@ -72,6 +74,7 @@ function Shell() {
       {tab === "pacientes" && <RegisterScreen />}
       {tab === "monitor" && <MonitorScreen />}
       {tab === "historial" && <HistoryScreen />}
+      {tab === "clinica" && <ClinicScreen />}
     </View>
   );
 }
