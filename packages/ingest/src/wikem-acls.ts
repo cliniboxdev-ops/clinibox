@@ -27,7 +27,7 @@ const PAGES: { title: string; id: string; lang: "en" | "es" }[] = [
   { title: "ACLS (main)/es", id: "wikem-acls-main.es", lang: "es" },
 ];
 
-import type { ProtocolDocument, ProtocolSection } from "./schema.ts";
+import type { ProtocolDocument, ProtocolSection } from "@clinibox/shared";
 
 function cleanText(text: string): string {
   return text.replace(/\[\s*edit\s*\]/gi, "").replace(/\s+/g, " ").trim();

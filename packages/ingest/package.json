@@ -11,6 +11,7 @@
     "all": "node src/seed-triage.ts && node src/build-db.ts && node src/verify-db.ts"
   },
   "dependencies": {
+    "@clinibox/shared": "workspace:*",
     "axios": "^1.7.9",
     "cheerio": "^1.0.0"
   },

@@ -1,4 +1,4 @@
-import type { ProtocolDocument } from "../schema.ts";
+import type { ProtocolDocument } from "@clinibox/shared";
 
 /**
  * Deterministic field-triage seed protocols.

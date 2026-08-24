@@ -2,7 +2,7 @@ import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "nod
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { DatabaseSync } from "node:sqlite";
-import type { ProtocolDocument } from "./schema.ts";
+import type { ProtocolDocument } from "@clinibox/shared";
 
 /**
  * Builds the offline knowledge index from every /data/*.json protocol:
